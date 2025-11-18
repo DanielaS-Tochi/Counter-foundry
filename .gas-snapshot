@@ -1,0 +1,2 @@
+CounterTest:testIncrement() (gas: 30443)
+CounterTest:testInitialIsZero() (gas: 7847)
