@@ -19,4 +19,19 @@ contract CounterTest is Test {
         c.increment();
         assertEq(c.count(), 1);
     }
+
+    function testDecrement() public {
+        // increment first so we can decrement safely
+        c.increment();
+        assertEq(c.count(), 1);
+
+        c.decrement();
+        assertEq(c.count(), 0);
+    }
+
+    function testDecrementRevertsIfZero() public {
+        // Expect revert because count is 0
+        vm.expectRevert(bytes("Cannot decrement below zero"));
+        c.decrement();
+    }
 }

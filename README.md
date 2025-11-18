@@ -1,129 +1,139 @@
-# 🧮 Counter — Foundry Practice Project
+# 🧮 Counter — Foundry Practice Project (v1.1)
 
-This project is a simple **Counter** smart contract used to practice the full Foundry workflow:
-
-- writing a Solidity contract  
-- compiling  
-- testing  
-- deploying  
-- and organizing a clean Foundry project  
-
-This serves as a complete learning mini–project before starting more advanced development.
+Proyecto de práctica: un **Counter** simple para aprender el flujo completo con Foundry y pruebas en Solidity.
+Esta versión incluye `increment()`, `decrement()` (con protección para no bajar de cero), `reset()` y el getter público `count()`.
 
 ---
 
-## 📁 Project Structure
+## 🎯 Objetivos didácticos
 
-src/ → Main smart contracts
-└─ Counter.sol
+- Escribir un contrato sencillo en Solidity.
+- Ejecutar y entender `forge build`, `forge test`, `forge fmt`.
+- Desplegar en una red local con `anvil` y hacer llamadas con `cast`.
+- Escribir tests que cubran casos felices y casos de error (revert).
+- Documentar y versionar el proyecto (git tags).
 
-test/ → Solidity tests using forge-std
-└─ Counter.t.sol
+---
 
-script/ → Deployment scripts
-└─ Counter.s.sol
+## 📁 Estructura del proyecto
 
-foundry.toml → Foundry configuration
+src/
+└─ Counter.sol # Contrato con increment, decrement y reset
+
+test/
+└─ Counter.t.sol # Tests unitarios en Solidity (forge-std)
+
+script/
+└─ Counter.s.sol # Script opcional para deploy reproducible
+
+foundry.toml # Config Foundry
+README.md # Este archivo
 
 yaml
 Copiar código
 
 ---
 
-## 🚀 Getting Started
+## 🧾 Contrato: descripción rápida
 
-### Build
+- `uint256 public count` — getter automático `count()`.
+- `increment()` — suma 1 a `count` y emite `Increment`.
+- `decrement()` — resta 1 a `count` si `count > 0`, emite `Decrement`. Revert con `"Cannot decrement below zero"` si se intenta bajar de 0.
+- `reset()` — pone `count` en 0.
 
-```sh
-forge build
-Test
-sh
-Copiar código
-forge test -vv
-Format
-sh
-Copiar código
+---
+
+## 🚀 Comandos principales
+
+1. Formatear:
+```bash
 forge fmt
-📦 Deployment
-Start a local node:
+Compilar:
 
-sh
+bash
+Copiar código
+forge build -v
+Ejecutar tests (mostrando todo):
+
+bash
+Copiar código
+forge test -vvv
+Levantar red local (en otra terminal):
+
+bash
 Copiar código
 anvil
-Deploy using the script:
+Deploy desde otra terminal (usando PRIVATE_KEY de anvil):
 
-sh
+bash
 Copiar código
-forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
-🧪 What I Practiced
-How to structure a Foundry project
+export PRIVATE_KEY=<tu_private_key>
+forge create src/Counter.sol:Counter \
+  --rpc-url http://127.0.0.1:8545 \
+  --private-key $PRIVATE_KEY \
+  --broadcast
+O usando el script:
 
-How to write and run unit tests in Solidity
-
-Using forge-std (Test.sol, console.log, etc.)
-
-Running Anvil as a local Ethereum node
-
-Writing and executing deployment scripts
-
-Understanding Foundry CLI commands (forge, cast, anvil)
-
-This project is now complete and closed as a foundational practice.
-
-📚 Foundry Documentation (Reference)
-Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.
-
-It includes:
-
-Forge: Testing framework
-
-Cast: CLI tools for interacting with smart contracts
-
-Anvil: Local Ethereum node
-
-Chisel: Solidity REPL
-
-Documentation:
-https://book.getfoundry.sh/
-
-🛠️ Foundry Commands Reference
-Build
-sh
+bash
 Copiar código
-forge build
-Test
-sh
-Copiar código
-forge test
-Format
-sh
-Copiar código
-forge fmt
-Gas Snapshots
-sh
-Copiar código
-forge snapshot
-Anvil (local node)
-sh
-Copiar código
-anvil
-Deploy Script
-sh
-Copiar código
-forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
-Cast (utility commands)
-sh
-Copiar código
-cast <subcommand>
-Help
-sh
-Copiar código
-forge --help
-anvil --help
-cast --help
-🏁 Status
-✅ Project completed as a practice exercise with Foundry.
-Next step: build a full custom project from scratch.
+forge script script/Counter.s.sol:CounterScript --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY --broadcast
+Leer el valor count (reemplazá 0xDIRECCION):
 
-👩‍💻 Author
-Created by Daniela, practicing Solidity and Foundry step by step.
+bash
+Copiar código
+cast call 0xDIRECCION "count() returns (uint256)"
+Llamar increment() / decrement():
+
+bash
+Copiar código
+cast send 0xDIRECCION "increment()" --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY
+cast send 0xDIRECCION "decrement()" --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY
+🧪 Tests que incluimos (qué enseñan)
+testInitialIsZero — el estado inicial es 0 (getter público).
+
+testIncrement — increment() incrementa correctamente.
+
+testDecrement — verifica que decrement() funcione después de un increment().
+
+testDecrementRevertsIfZero — demuestra cómo testear un revert con mensaje esperado.
+
+✅ Buenas prácticas mencionadas en clase
+No subir claves privadas al repo: usar .env y .gitignore.
+
+Versionar releases con tags: git tag -a v1.1 -m "Counter v1.1: add decrement()".
+
+Usar forge fmt antes de commits.
+
+Mantener tests exhaustivos y simples.
+
+Documentar el flujo de deploy local y las rutas de los scripts.
+
+🧩 Ejercicio propuesto para los alumnos
+Añadir una función incrementBy(uint256 n) con test.
+
+Añadir un owner que pueda hacer reset() (practicar control de acceso).
+
+Medir gas: añadir forge snapshot y ver variaciones de gas por función.
+
+🏁 Estado
+✅ Proyecto listo como práctica y material de clase.
+Siguiente: construir un mini-dapp que conecte este contrato con un front (React + Vite) y luego integrar un pequeño análisis con IA si desean un "toque de distinción".
+
+👩‍💻 Autor
+Presentado por Daniela — práctica de Foundry paso a paso.
+
+yaml
+Copiar código
+
+---
+
+## 6) Checklist para la clase / entrega
+- [ ] `forge fmt` ✅  
+- [ ] `forge build` ✅  
+- [ ] `forge test` ✅  
+- [ ] `anvil` y deploy local con `--broadcast` ✅  
+- [ ] `cast call` y `cast send` para demostrar lectura y escritura ✅  
+- [ ] README actualizado y listo para compartir ✅  
+- [ ] Commit y tag (v1.1) y push al remoto ✅
+
+---
